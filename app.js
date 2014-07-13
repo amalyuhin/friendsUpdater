@@ -5,6 +5,8 @@
 var express = require('express');
 var http = require('http');
 var mongojs = require("mongojs");
+var vkApi = require("./app/lib/vkApi");
+var vk = new vkApi();
 
 //var mongo = require('../config/database');
 var app = express();
@@ -24,38 +26,49 @@ app.get('/wines/:id', function(req, res) {
 });
 
 app.get('/test', function(req, res) {
-    var options = {
-        host: 'api.vk.com',
-        port: 80,
-        path: '/method/friends.get?user_id=2839118&v=5.23',
-        method: 'GET'
+    var callback = function (response, error) {
+        if (error) {
+            console.log('Error:', error);
+        }
+
+        if (response) {
+            console.log('Ok:', response);
+        }
     };
 
-    http.get(options, function(response) {
-        console.log('STATUS: ' + response.statusCode);
-        console.log('HEADERS: ' + JSON.stringify(response.headers));
-        response.setEncoding('utf8');
-
-        var result = '';
-
-
-        response.on('data', function (data) {
-            result += data;
-        });
-
-        response.on('end', function() {
-            var json = JSON.parse(result);
-            if (json.response ) {
-                db.users.save({_id: "2839118", first_name: "Тамара", last_name: "Хайрова", friends: [{created_at: new Date(), count: json.response.count, items: json.response.items}]}, function(err, saved) {
-                    if( err || !saved ) {
-                        res.send({error: "User not saved", message: err});
-                    } else {
-                        res.send({success: "User saved"});
-                    }
-                });
-            }
-        });
-    });
+    vk.request('users.get', { user_id: '2839118' }, callback);
+//    var options = {
+//        host: 'api.vk.com',
+//        port: 80,
+//        path: '/method/friends.get?user_id=2839118&v=5.23',
+//        method: 'GET'
+//    };
+//
+//    http.get(options, function(response) {
+//        console.log('STATUS: ' + response.statusCode);
+//        console.log('HEADERS: ' + JSON.stringify(response.headers));
+//        response.setEncoding('utf8');
+//
+//        var result = '';
+//
+//
+//        response.on('data', function (data) {
+//            result += data;
+//        });
+//
+//        response.on('end', function() {
+//            var json = JSON.parse(result);
+//            if (json.response ) {
+//                db.users.save({_id: "2839118", first_name: "Тамара", last_name: "Хайрова", friends: [{created_at: new Date(), count: json.response.count, items: json.response.items}]}, function(err, saved) {
+//                    if( err || !saved ) {
+//                        res.send({error: "User not saved", message: err});
+//                    } else {
+//                        res.send({success: "User saved"});
+//                    }
+//                });
+//            }
+//        });
+//    });
 });
 
 app.get('/add/:id', function(req, res) {
