@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head lang="en">
+    <meta charset="UTF-8">
+    <title>{{ first_name }} {{ last_name }}</title>
+</head>
+<body>
+    <div>
+        <img src="{{ photo_100 }}" alt="{{ first_name }} {{ last_name }}"/>
+        <p>{{ first_name }} {{ last_name }}</p>
+        {% if online %}<span>Online</span>{% endif %}
+    </div>
+</body>
+</html>
+
