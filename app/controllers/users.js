@@ -14,6 +14,22 @@ var db = mongojs.connect(databaseUrl, collections, function(){
 });
 
 module.exports.controller = function(app) {
+    function arr_diff(a1, a2)
+    {
+        var a=[], diff=[];
+        for(var i=0;i<a1.length;i++)
+            a[a1[i]]=true;
+        for(var i=0;i<a2.length;i++)
+            if(a[a2[i]]) delete a[a2[i]];
+            else a[a2[i]]=true;
+        for(var k in a)
+            diff.push(k);
+        return diff;
+    }
+
+    Array.prototype.diff = function(a) {
+        return this.filter(function(i) {return a.indexOf(i) < 0;});
+    };
 
     app.get('/user/:id', function (req, res) {
         var callback = function (data, error) {
@@ -43,6 +59,71 @@ module.exports.controller = function(app) {
 
         vk.request('friends.get', { user_id: req.params.id }, callback);
     });
+
+    app.get('/user/:id/remove', function (req, res) {
+        db.users.remove({ "_id" : req.params.id, "friends[1].created_at" : "Wed Jul 30 21:15:44 NOVT 2014"});
+    });
+
+    app.get('/user/:id/update', function (req, res) {
+        var uid = req.params.id;
+
+        db.users.findOne({ "_id" : uid}, function (err, doc) {
+            if (err) {
+                console.log("Error: " + err);
+            }
+
+            if (!doc) {
+                console.log("Error: User does not exist.");
+            } else {
+                var fOld = doc.friends[0].items;
+                var fNew = doc.friends[doc.friends.length-1].items;
+
+                var addedFriends = fNew.diff(fOld);
+                var removedFriends = fOld.diff(fNew);
+                var now = new Date();
+
+                db.users.update(
+                    { "_id": uid },
+                    { $push: { added: {created_at: now, items: addedFriends} } }
+                );
+
+                db.users.update(
+                    { "_id": uid },
+                    { $push: { removed: {created_at: now, items: removedFriends} } }
+                );
+
+                vk.request('users.get', { user_ids: addedFriends }, function (data, error) {
+                    console.log("Added: ", data);
+
+                    vk.request('users.get', { user_ids: removedFriends }, function (data2, error2) {
+                        console.log("Removed: ", data2);
+                    });
+                });
+
+//                var firstDate = new Date();
+//                var secondDate = new Date();
+//
+//                firstDate.setHours(0, 0, 0, 0);
+//                secondDate.setHours(23, 59, 59, 59);
+//
+//                console.log(firstDate, secondDate);
+//
+//                db.users.findOne({ "friends.created_at": { $gte: firstDate, $lt: secondDate } }, function (err, doc1) {
+//                   console.log(doc1);
+//                   if (!doc1) {
+//                       vk.request('friends.get', { user_id: uid }, function (data, error) {
+//                           db.users.update(
+//                               { "_id": uid },
+//                               { $push: { friends: {created_at: new Date(), count: data.response.count, items: data.response.items} } }
+//                           );
+//                       });
+//                   }
+//                });
+            }
+        });
+    });
+
+
 
 //    app.get('/wines', function (req, res) {
 //        res.send([
@@ -87,14 +168,7 @@ module.exports.controller = function(app) {
 //        //
 //        //        response.on('end', function() {
 //        //            var json = JSON.parse(result);
-//        //            if (json.response ) {
-//        //                db.users.save({_id: "2839118", first_name: "Тамара", last_name: "Хайрова", friends: [{created_at: new Date(), count: json.response.count, items: json.response.items}]}, function(err, saved) {
-//        //                    if( err || !saved ) {
-//        //                        res.send({error: "User not saved", message: err});
-//        //                    } else {
-//        //                        res.send({success: "User saved"});
-//        //                    }
-//        //                });
+//        //            if (json.response ) {//        //
 //        //            }
 //        //        });
 //        //    });
