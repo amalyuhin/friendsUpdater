@@ -6,7 +6,7 @@ var http = require('http');
 
 var vkApi = function () {
     this.params = {
-        version: '5.23',
+        version: '5.24',
         host: 'api.vk.com',
         port: 80,
         method: 'GET'

@@ -2,14 +2,56 @@
 <html>
 <head lang="en">
     <meta charset="UTF-8">
-    <title>{{ first_name }} {{ last_name }}</title>
+    <title>{{ users[profile.id].first_name }} {{ users[profile.id].last_name }}</title>
 </head>
 <body>
     <div>
-        <img src="{{ photo_100 }}" alt="{{ first_name }} {{ last_name }}"/>
-        <p>{{ first_name }} {{ last_name }}</p>
-        {% if online %}<span>Online</span>{% endif %}
+        <img src="{{ users[profile.id].photo_100 }}" alt="{{ users[profile.id].first_name }} {{ users[profile.id].last_name }}"/>
+        <p>{{ users[profile.id].first_name }} {{ users[profile.id].last_name }}</p>
+        {% if users[profile.id].online %}<span>Online</span>{% endif %}
     </div>
+
+    <h3>Добавлены:</h3>
+    {% if profile.added.length > 0 %}
+        <ul>
+            {% for added in profile.added %}
+                <li>
+                    <span>{{ moment(added.created_at).format('DD.MM.YYYY') }}</span>
+                    <ul>
+                        {% for i in added.items %}
+                            <li>
+                                <img src="{{ users[i].photo_50 }}" alt="{{ users[i].first_name }} {{ users[i].last_name }}"/>
+                                <a href="http://vk.com/id{{users[i].id}}" target="_blank">{{ users[i].first_name }} {{ users[i].last_name }}</a>
+                            </li>
+                        {% endfor %}
+                    </ul>
+                </li>
+            {% endfor %}
+        </ul>
+    {% else %}
+        <p>Нет добавленных пользователей</p>
+    {% endif %}
+
+    <h3>Удалены:</h3>
+    {% if profile.added.length > 0 %}
+    <ul>
+        {% for removed in profile.removed %}
+        <li>
+            <span>{{ moment(removed.created_at).format('DD.MM.YYYY') }}</span>
+            <ul>
+                {% for i in removed.items %}
+                    <li>
+                        <img src="{{ users[i].photo_50 }}" alt="{{ users[i].first_name }} {{ users[i].last_name }}"/>
+                        <a href="http://vk.com/id{{users[i].id}}" target="_blank">{{ users[i].first_name }} {{ users[i].last_name }}</a>
+                    </li>
+                {% endfor %}
+            </ul>
+        </li>
+        {% endfor %}
+    </ul>
+    {% else %}
+        <p>Нет удаленных пользователей</p>
+    {% endif %}
 </body>
 </html>
 
