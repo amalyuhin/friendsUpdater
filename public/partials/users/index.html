@@ -1,0 +1,40 @@
+<div>
+    <img ng-src="{{ data.profile.photo_100 }}" alt="{{ data.profile.first_name }} {{ data.profile.last_name }}"/>
+    <p>{{ data.profile.first_name }} {{ data.profile.last_name }}</p>
+    <span ng-if="data.profile.online">Online</span>
+</div>
+
+<div ng-if="data.profile.added.length">
+    <h3>Добавлены:</h3>
+    <ul>
+        <li ng-repeat="added in data.profile.added">
+            <span>{{ added.created_at | date:'dd.MM.yyyy' }}</span>
+            <ul>
+                <li ng-repeat="addedId in added.items">
+                    <img ng-src="{{ data.users[addedId].photo_50 }}" alt="{{ data.users[addedId].first_name }} {{ data.users[addedId].last_name }}"/>
+                    <a ng-href="http://vk.com/id{{ addedId }}" target="_blank">{{data.users[addedId].first_name }} {{ data.users[addedId].last_name }}</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<p ng-if="!data.profile.added.length">Нет добавленных пользователей</p>
+
+<div ng-if="data.profile.added.length">
+    <h3>Удалены:</h3>
+    <ul>
+        <li ng-repeat="removed in data.profile.removed">
+            <span>{{ removed.created_at | date:'dd.MM.yyyy' }}</span>
+            <ul>
+                <li ng-repeat="removedId in removed.items">
+                    <img ng-src="{{ data.users[removedId].photo_50 }}" alt="{{ data.users[removedId].first_name }} {{ data.users[removedId].last_name }}"/>
+                    <a ng-href="http://vk.com/id{{ removedId }}" target="_blank">{{ data.users[removedId].first_name }} {{ data.users[removedId].last_name }}</a>
+                </li>
+            </ul>
+        </li>
+    </ul>
+</div>
+
+<p ng-if="!data.profile.added.length">Нет удаленных пользователей</p>
+

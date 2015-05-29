@@ -3,6 +3,24 @@
 <head lang="en">
     <meta charset="UTF-8">
     <title>{{ users[profile.id].first_name }} {{ users[profile.id].last_name }}</title>
+    <script src="http://localhost:3002/socket.io/socket.io.js"></script>
+    <script>
+        window.onload = function() {
+            var socket = io.connect('http://127.0.0.1:3002');
+
+            socket.on('connected', function () {
+                console.log('test');
+
+                socket.on('dataReceived', function(data) {
+                    console.log('received data:', data);
+                });
+
+                socket.on('dataError', function(err) {
+                    console.log('receiving data error:', err);
+                });
+            });
+        };
+    </script>
 </head>
 <body>
     <div>

@@ -1,0 +1,12 @@
+<h3>Likes scanning</h3>
+
+<ul>
+    <li ng-repeat="item in items">
+        <ul ng-if="item.attachments.length">
+            <li ng-repeat="attach in item.attachments">
+                <img ng-if="attach.type == 'photo'" ng-src="{{ item.attachments.length > 1 ? attach.photo.photo_130 : attach.photo.photo_604 }}"/>
+            </li>
+        </ul>
+        <p>{{ item.text }}</p>
+    </li>
+</ul>
